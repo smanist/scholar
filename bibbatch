@@ -1,0 +1,50 @@
+#!/bin/bash
+# Shell script for batch downloading bibtex info from Google Scholar.
+# Edited by Daning Huang
+# Based on scholar.py from hildensia@github
+# v0.2 20140218
+#
+# USAGE:
+# 1.
+# bibbatch $PAPERLIST $BIBTEXLIST $COOKIE
+# Read paper name from $PAPERLIST, export info to $BIBTEXLIST, using $COOKIE as cookie
+# 2.
+# bibbatch
+# By default, $PAPERLIST = paperlist, $BIBTEXLIST = res.bib
+#
+# CAUTION:
+# Fetch cookie from scholar.google.com and use it as the 3rd arg for the first time.
+# The cookie should look like 'GSP=ID=...', remove the 'GSP=ID=' part.
+
+BIBPATH=/opt/MyTools/batchdownload
+
+if [ -z $1 ] ; then
+	paplist=paperlist
+else
+	paplist=$1
+fi
+echo "input: $paplist"
+
+if [ -z $2 ] ; then
+	touch res.bib
+	biblist=res.bib
+else
+	biblist=$2
+fi
+echo "output: $biblist"
+
+if [ -z $3 ] ; then
+	cp $BIBPATH/_cookie ./_cookie
+else
+	echo $3 > _cookie
+	echo $3 > $BIBPATH/_cookie
+fi
+echo "cookie: `less ./_cookie`"
+
+while read line
+do
+	echo $line
+#	$BIBPATH/scholar.py $line --bibtex --count 1
+done < "$paplist" > "$biblist"
+
+rm _cookie
